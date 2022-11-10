@@ -1,12 +1,32 @@
-# `pretty-pileup`: Pretty Printing of SAMtools Pileups
+<div align="center">
 
+# pretty-pileup
 
+**_Pretty Printing for SAMtools Pileups_**
+
+![Example usage of pretty-pileup](img/pretty-pileup.gif)
+
+</div>
+
+`pretty-pileup` provides stylized printing of SAMtools pileup information from
+BAM and SAM files.
+
+**Features:**
+
+ - Color-coded nucleotides
+ - Gradient-based coloring of base qualities (red -> green)
+
+## Usage
+
+```bash
+pretty-pileup --bam-file test.bam --fasta test.fasta | less
+```
 
 ## Acknowledgements
 
-The following projects were a huge help in writing `prett-pileup`:
+The following projects were a huge help in writing `pretty-pileup`:
 
- - [`rust_htslib`](https://github.com/rust-bio/rust-htslib.git): This is an
+ - [`rust-htslib`](https://github.com/rust-bio/rust-htslib.git): This is an
    amazing library that wraps `htslib` and provides an excellent, high-level
    Rust API. I wouldn't have been able to write `pretty-pileup` without it.
  - [`exa`](https://github.com/ogham/exa.git): `exa` is a command line replacement
