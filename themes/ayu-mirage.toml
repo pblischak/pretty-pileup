@@ -1,0 +1,10 @@
+[base_colors]
+baseA = "#F07178"
+baseC = "#7FD962"
+baseG = "#73B8FF"
+baseT = "#E6B673"
+baseN = "#333333"
+
+[quality_gradiant]
+low_qual = "#F26D78"
+high_qual = "#AAD94C"

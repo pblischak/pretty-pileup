@@ -1,15 +1,12 @@
 use std::io::{self, ErrorKind};
 
-use clap::Parser;
-use phf::phf_map;
-
 // use ansi_term::Color::RGB;
 use ansi_term::{ANSIString, ANSIStrings, Color::RGB, Style};
-
+use clap::Parser;
+use phf::phf_map;
+use pretty_pileup::colors::BasePair;
+use pretty_pileup::config::parse_config;
 use rust_htslib::{bam, bam::Read, faidx};
-
-pub mod colors;
-use crate::colors::{BasePair, ColorTheme};
 
 // Set up base pair and quality score coloring
 
@@ -37,20 +34,15 @@ struct Args {
     /// Ploidy level
     #[arg(short, long, default_value_t = 2)]
     ploidy: u8,
-
-    #[arg(short, long, default_value = "dark")]
-    color_theme: String,
 }
 
 fn open_ref_genome(ref_genome: Option<&String>) -> Option<faidx::Reader> {
     ref_genome.map(|path| faidx::Reader::from_path(path).unwrap())
 }
 
-// Main
-
 fn run() -> io::Result<i32> {
     let args = Args::parse();
-    let color_theme = ColorTheme::new(Some(args.color_theme.as_str()));
+    let color_theme = parse_config();
 
     let ref_genome = open_ref_genome(args.fasta.as_ref());
 
@@ -76,7 +68,7 @@ fn run() -> io::Result<i32> {
         let ref_base = match &ref_genome {
             Some(seq) => seq
                 .fetch_seq_string(chrom, pileup.pos() as usize, pileup.pos() as usize)
-                .unwrap_or("N".to_string()),
+                .unwrap_or_else(|_| "N".to_string()),
             None => "N".to_string(),
         };
 
@@ -148,7 +140,4 @@ mod exits {
 
     /// Exit code for when there was at least one I/O error during execution.
     pub const RUNTIME_ERROR: i32 = 1;
-
-    /// Exit code for when the command-line options are invalid.
-    pub const OPTIONS_ERROR: i32 = 3;
 }

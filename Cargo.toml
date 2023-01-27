@@ -1,15 +1,19 @@
 [package]
 name = "pretty-pileup"
 version = "0.1.0"
-author = "Paul Blischak"
+authors = ["Paul Blischak <paul.blischak@gmail.com>"]
 description = "Pretty Printing for SAMtools Pileups"
 edition = "2021"
 
 [dependencies]
 rust-htslib = "0.40.2"
 ansi_term = "0.12.1"
-clap = { version = "4.0.19", features = ["derive"] }
-phf = { version = "0.11", features = ["macros"] }
-libc = "0.2.137"
-colorsys = "0.6.6"
-# anyhow = "1.0.66"
+clap = { version = "4.1.1", features = ["derive"] }
+phf = { version = "0.11.1", features = ["macros"] }
+libc = "0.2.139"
+colorsys = "0.6.7"
+anyhow = "1.0.68"
+toml = "0.5.11"
+dirs = "4.0.0"
+serde = "1.0.152"
+serde_derive = "1.0.152"

@@ -1,6 +1,23 @@
+//! Module for working with colors.
+
 use ansi_term::Color;
 use colorsys::Rgb;
 
+use crate::config::Config;
+
+const PHRED_MAX: f64 = 40.0;
+
+/// Enumerate DNA base pairs for matching.
+pub enum BasePair {
+    BaseA,
+    BaseC,
+    BaseG,
+    BaseT,
+    BaseN,
+}
+
+#[derive(Debug)]
+/// Store an `ansi_term::Color` value for each possible base pair (A, C, G, T, N).
 pub struct BaseColors {
     pub a: Color,
     pub c: Color,
@@ -10,23 +27,43 @@ pub struct BaseColors {
 }
 
 impl BaseColors {
+    /// Construct a new `BaseColor`.
     pub fn new(a: Color, c: Color, g: Color, t: Color, n: Color) -> Self {
         Self { a, c, g, t, n }
     }
 }
 
+impl Default for BaseColors {
+    fn default() -> Self {
+        Self {
+            a: rgb_from_hex("#F07178"),
+            c: rgb_from_hex("#7FD962"),
+            g: rgb_from_hex("#73B8FF"),
+            t: rgb_from_hex("#E6B673"),
+            n: Color::RGB(50, 50, 50),
+        }
+    }
+}
+
+#[derive(Debug)]
+/// Store values representing the start and end of a color gradient.
 pub struct QualityGradient {
     pub low: Rgb,
     pub high: Rgb,
 }
 
 impl QualityGradient {
+    /// Construct a new `ColorGradient`.
     pub fn new(low: Rgb, high: Rgb) -> Self {
         Self { low, high }
     }
 
+    /// Calculate gradient color associated with given quality value.
+    ///
+    /// The passed value is normalized by the maximum PHRED value (`PHRED_MAX = 40.0`)
+    /// and is clamped between 0.0 and 1.0 for values outside the range 0.0 to 40.0.
     pub fn calc_color_on_gradient(&self, qual_val: f64) -> Color {
-        let qual_ratio = qual_val / 40.0;
+        let qual_ratio = (qual_val / PHRED_MAX).clamp(0.0, 1.0);
         let new_red: u8 = (self.low.red() + qual_ratio * (self.high.red() - self.low.red())) as u8;
         let new_green: u8 =
             (self.low.green() + qual_ratio * (self.high.green() - self.low.green())) as u8;
@@ -36,28 +73,24 @@ impl QualityGradient {
     }
 }
 
-pub enum BasePair {
-    BaseA,
-    BaseC,
-    BaseG,
-    BaseT,
-    BaseN,
+impl Default for QualityGradient {
+    fn default() -> Self {
+        Self {
+            low: Rgb::from_hex_str("#F26D78")
+                .unwrap_or_else(|_| Rgb::from((50.0_f32, 50.0_f32, 50.0_f32))),
+            high: Rgb::from_hex_str("#AAD94C")
+                .unwrap_or_else(|_| Rgb::from((50.0_f32, 50.0_f32, 50.0_f32))),
+        }
+    }
 }
 
+#[derive(Debug, Default)]
 pub struct ColorTheme {
     pub base_colors: BaseColors,
     pub quality_gradient: QualityGradient,
 }
 
 impl ColorTheme {
-    pub fn new(theme_name: Option<&str>) -> Self {
-        if let Some(tn) = theme_name {
-            set_color_theme(tn.to_uppercase().as_str())
-        } else {
-            set_color_theme("DARK")
-        }
-    }
-
     pub fn get_base_color(&self, base: &BasePair) -> Color {
         match base {
             BasePair::BaseA => self.base_colors.a,
@@ -67,36 +100,20 @@ impl ColorTheme {
             BasePair::BaseN => self.base_colors.n,
         }
     }
-}
 
-fn set_color_theme(upper_theme_name: &str) -> ColorTheme {
-    if upper_theme_name == "AYULIGHT" || upper_theme_name == "LIGHT" {
+    pub(crate) fn from_config(config: Config) -> ColorTheme {
         let base_colors = BaseColors::new(
-            rgb_from_hex("#D2BFFF"),
-            rgb_from_hex("#D2BFFF"),
-            rgb_from_hex("#D2BFFF"),
-            rgb_from_hex("#D2BFFF"),
-            Color::RGB(50, 50, 50),
+            rgb_from_hex(config.base_colors.base_a.as_str()),
+            rgb_from_hex(config.base_colors.base_c.as_str()),
+            rgb_from_hex(config.base_colors.base_g.as_str()),
+            rgb_from_hex(config.base_colors.base_t.as_str()),
+            rgb_from_hex(config.base_colors.base_n.as_str()),
         );
         let quality_gradient = QualityGradient::new(
-            Rgb::from_hex_str("#F26D78").unwrap_or(Rgb::from((50.0_f32, 50.0_f32, 50.0_f32))),
-            Rgb::from_hex_str("#AAD94C").unwrap_or(Rgb::from((50.0_f32, 50.0_f32, 50.0_f32))),
-        );
-        ColorTheme {
-            base_colors,
-            quality_gradient,
-        }
-    } else {
-        let base_colors = BaseColors::new(
-            rgb_from_hex("#F07178"),
-            rgb_from_hex("#7FD962"),
-            rgb_from_hex("#73B8FF"),
-            rgb_from_hex("#E6B673"),
-            Color::RGB(50, 50, 50),
-        );
-        let quality_gradient = QualityGradient::new(
-            Rgb::from_hex_str("#F26D78").unwrap_or(Rgb::from((50.0_f32, 50.0_f32, 50.0_f32))),
-            Rgb::from_hex_str("#AAD94C").unwrap_or(Rgb::from((50.0_f32, 50.0_f32, 50.0_f32))),
+            Rgb::from_hex_str(config.quality_gradient.low.as_str())
+                .unwrap_or_else(|_| Rgb::from((50.0_f32, 50.0_f32, 50.0_f32))),
+            Rgb::from_hex_str(config.quality_gradient.high.as_str())
+                .unwrap_or_else(|_| Rgb::from((50.0_f32, 50.0_f32, 50.0_f32))),
         );
         ColorTheme {
             base_colors,
@@ -106,6 +123,7 @@ fn set_color_theme(upper_theme_name: &str) -> ColorTheme {
 }
 
 fn rgb_from_hex(hex_color: &str) -> Color {
-    let rgb = Rgb::from_hex_str(hex_color).unwrap_or(Rgb::from((50.0_f32, 50.0_f32, 50.0_f32)));
+    let rgb =
+        Rgb::from_hex_str(hex_color).unwrap_or_else(|_| Rgb::from((50.0_f32, 50.0_f32, 50.0_f32)));
     Color::RGB(rgb.red() as u8, rgb.green() as u8, rgb.blue() as u8)
 }
