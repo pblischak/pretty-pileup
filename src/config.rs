@@ -70,7 +70,7 @@ pub fn parse_config() -> ColorTheme {
         };
         let config: Config = match toml::from_str(contents.as_str()) {
             Ok(c) => c,
-            Err(e) => panic!("{}", e),
+            Err(_) => return ColorTheme::default(),
         };
         ColorTheme::from_config(config)
     } else {
