@@ -5,5 +5,8 @@
 //!  - Fully configurable color themes.
 //!  - Seemless integration with pagers such as `less`.
 //!
+pub mod cli;
 pub mod colors;
 pub mod config;
+pub mod exits;
+pub mod pileup;
