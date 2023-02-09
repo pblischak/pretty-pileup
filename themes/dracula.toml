@@ -1,0 +1,10 @@
+[base_colors]
+base_a = "#FF5555"
+base_c = "#F1FA8C"
+base_g = "#50FA7B"
+base_t = "#FF79C6"
+base_n = "#44475A"
+
+[quality_gradient]
+low = "#F8F8F2"
+high = "#44475A"
