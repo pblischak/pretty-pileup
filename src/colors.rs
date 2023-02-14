@@ -33,6 +33,7 @@ impl BaseColors {
     }
 }
 
+/// Default implementation for base colors, which uses Ayu Mirage.
 impl Default for BaseColors {
     fn default() -> Self {
         Self {
@@ -73,6 +74,7 @@ impl QualityGradient {
     }
 }
 
+/// Default implementation for quality gradiants using Ayu Mirage.
 impl Default for QualityGradient {
     fn default() -> Self {
         Self {

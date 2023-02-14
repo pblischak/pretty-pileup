@@ -1,6 +1,6 @@
-use clap::Parser;
+//! Module to set up command line parsing.
 
-// Set up command line argument parsing
+use clap::Parser;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about)]

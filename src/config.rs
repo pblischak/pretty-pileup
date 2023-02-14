@@ -4,7 +4,6 @@ use std::path::{Path, PathBuf};
 
 use dirs::home_dir;
 use serde_derive::Deserialize;
-use toml;
 
 use crate::colors::ColorTheme;
 
@@ -62,7 +61,20 @@ fn find_config() -> Option<PathBuf> {
     None
 }
 
-pub fn parse_config() -> ColorTheme {
+/// Parse the TOML config file defining a color thme.
+///
+/// ```toml
+/// [base_colors]
+/// base_a = "<hex color>"
+/// base_c = "<hex color>"
+/// base_g = "<hex color>"
+/// base_t = "<hex color>"
+///
+/// [qualitygradiant]
+/// low = "<hex color>"
+/// high = "<hex color>"
+/// ```
+pub(crate) fn parse_config() -> ColorTheme {
     if let Some(cfg) = find_config() {
         let contents = match std::fs::read_to_string(cfg) {
             Ok(c) => c,
