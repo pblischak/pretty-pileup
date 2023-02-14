@@ -22,6 +22,20 @@ BAM and SAM files.
 pretty-pileup --bam-file test.bam --fasta test.fasta | less
 ```
 
+## Installation
+
+To build and use `pretty-pileup` you must have Rust installed: 
+[link](https://www.rust-lang.org/tools/install). The instructions below can
+then be used to clone and build the source code.
+
+```
+git clone https://github.com/pblischak/pretty-pileup
+cd pretty-pileup/
+cargo build --release
+cargo test
+cargo install
+```
+
 ## Acknowledgements
 
 The following projects were a huge help in writing `pretty-pileup`:
